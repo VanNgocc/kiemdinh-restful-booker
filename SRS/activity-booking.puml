@@ -1,0 +1,16 @@
+@startuml
+start
+:Guest chọn phòng;
+:Nhập họ tên, email, điện thoại, ngày checkin/checkout;
+if (Dữ liệu hợp lệ?) then (có)
+  if (Phòng trống trong khoảng ngày?) then (có)
+    :Lưu booking;
+    :Hiển thị xác nhận đặt phòng;
+  else (trùng lịch)
+    :Báo lỗi trùng lịch;
+  endif
+else (không)
+  :Báo lỗi dữ liệu không hợp lệ;
+endif
+stop
+@enduml

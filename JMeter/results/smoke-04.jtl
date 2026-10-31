@@ -1,0 +1,6 @@
+timeStamp,elapsed,label,responseCode,responseMessage,threadName,dataType,success,failureMessage,bytes,sentBytes,grpThreads,allThreads,URL,Latency,IdleTime,Connect
+1793434857820,28,POST /booking/ (đồng thời),409,,"Đồng thời: cùng phòng, cùng ngày 1-3",,false,,121,365,5,5,http://127.0.0.1:3000/booking/,26,0,18
+1793434857820,28,POST /booking/ (đồng thời),409,,"Đồng thời: cùng phòng, cùng ngày 1-4",,false,,121,365,5,5,http://127.0.0.1:3000/booking/,26,0,18
+1793434857820,32,POST /booking/ (đồng thời),201,,"Đồng thời: cùng phòng, cùng ngày 1-2",text,true,,349,365,3,3,http://127.0.0.1:3000/booking/,31,0,18
+1793434857820,32,POST /booking/ (đồng thời),201,,"Đồng thời: cùng phòng, cùng ngày 1-1",text,true,,349,365,3,3,http://127.0.0.1:3000/booking/,31,0,18
+1793434857820,32,POST /booking/ (đồng thời),201,,"Đồng thời: cùng phòng, cùng ngày 1-5",text,true,,349,365,3,3,http://127.0.0.1:3000/booking/,31,0,18

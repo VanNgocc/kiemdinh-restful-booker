@@ -1,0 +1,34 @@
+{
+  "POST /booking/" : {
+    "transaction" : "POST /booking/",
+    "sampleCount" : 55,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 20.436363636363637,
+    "medianResTime" : 15.0,
+    "minResTime" : 12.0,
+    "maxResTime" : 187.0,
+    "pct1ResTime" : 27.0,
+    "pct2ResTime" : 28.199999999999996,
+    "pct3ResTime" : 187.0,
+    "throughput" : 3.8751497216937927,
+    "receivedKBytesPerSec" : 1.3236883939265836,
+    "sentKBytesPerSec" : 1.3850632794335236
+  },
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 55,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 20.436363636363637,
+    "medianResTime" : 15.0,
+    "minResTime" : 12.0,
+    "maxResTime" : 187.0,
+    "pct1ResTime" : 27.0,
+    "pct2ResTime" : 28.199999999999996,
+    "pct3ResTime" : 187.0,
+    "throughput" : 3.8751497216937927,
+    "receivedKBytesPerSec" : 1.3236883939265836,
+    "sentKBytesPerSec" : 1.3850632794335236
+  }
+}

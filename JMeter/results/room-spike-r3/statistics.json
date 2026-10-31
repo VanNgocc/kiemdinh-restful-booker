@@ -1,0 +1,50 @@
+{
+  "GET /room/ (đột biến)" : {
+    "transaction" : "GET /room/ (đột biến)",
+    "sampleCount" : 21222,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 0.7120441051738794,
+    "medianResTime" : 1.0,
+    "minResTime" : 0.0,
+    "maxResTime" : 5.0,
+    "pct1ResTime" : 1.0,
+    "pct2ResTime" : 1.0,
+    "pct3ResTime" : 1.0,
+    "throughput" : 356.7082394863347,
+    "receivedKBytesPerSec" : 456.2452923298988,
+    "sentKBytesPerSec" : 53.993922969122934
+  },
+  "GET /room/ (nền)" : {
+    "transaction" : "GET /room/ (nền)",
+    "sampleCount" : 3523,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 0.6891853533919967,
+    "medianResTime" : 1.0,
+    "minResTime" : 0.0,
+    "maxResTime" : 16.0,
+    "pct1ResTime" : 1.0,
+    "pct2ResTime" : 1.0,
+    "pct3ResTime" : 2.0,
+    "throughput" : 19.641732129814955,
+    "receivedKBytesPerSec" : 25.122869718113545,
+    "sentKBytesPerSec" : 2.973113750118475
+  },
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 24745,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 0.7087896544756511,
+    "medianResTime" : 1.0,
+    "minResTime" : 0.0,
+    "maxResTime" : 16.0,
+    "pct1ResTime" : 1.0,
+    "pct2ResTime" : 1.0,
+    "pct3ResTime" : 1.0,
+    "throughput" : 137.9604489220185,
+    "receivedKBytesPerSec" : 176.45763453513266,
+    "sentKBytesPerSec" : 20.882685139563343
+  }
+}

@@ -1,0 +1,35 @@
+@startuml
+left to right direction
+actor Guest
+actor Admin
+rectangle "Restful-booker Platform" {
+  usecase "Xem thông tin khách sạn" as UC1
+  usecase "Xem danh sách phòng" as UC2
+  usecase "Đặt phòng" as UC3
+  usecase "Gửi liên hệ" as UC4
+  usecase "Đăng nhập / Đăng xuất" as UC5
+  usecase "Quản lý phòng" as UC6
+  usecase "Quản lý đặt phòng" as UC7
+  usecase "Quản lý tin nhắn" as UC8
+  usecase "Xem báo cáo" as UC9
+  usecase "Cấu hình thương hiệu" as UC10
+  usecase "Kiểm tra trùng lịch" as UC11
+  usecase "Xác thực token" as UC12
+}
+Guest --> UC1
+Guest --> UC2
+Guest --> UC3
+Guest --> UC4
+Admin --> UC5
+Admin --> UC6
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+Admin --> UC10
+UC3 ..> UC11 : <<include>>
+UC6 ..> UC12 : <<include>>
+UC7 ..> UC12 : <<include>>
+UC8 ..> UC12 : <<include>>
+UC9 ..> UC12 : <<include>>
+UC10 ..> UC12 : <<include>>
+@enduml

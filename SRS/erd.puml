@@ -1,0 +1,60 @@
+@startuml
+' Mỗi service có CSDL riêng; liên kết logic qua roomid (không có khóa ngoại thật)
+package "room-service" {
+  entity Room {
+    * roomid : int <<PK>>
+    --
+    roomName : string
+    type : string
+    accessible : boolean
+    image : string
+    description : string
+    features : list
+    roomPrice : int
+  }
+}
+package "booking-service" {
+  entity Booking {
+    * bookingid : int <<PK>>
+    --
+    roomid : int
+    firstname : string
+    lastname : string
+    depositpaid : boolean
+    email : string
+    phone : string
+    checkin : date
+    checkout : date
+  }
+}
+package "message-service" {
+  entity Message {
+    * messageid : int <<PK>>
+    --
+    name : string
+    email : string
+    phone : string
+    subject : string
+    description : string
+    read : boolean
+  }
+}
+package "branding-service" {
+  entity Branding {
+    name : string
+    logoUrl : string
+    description : string
+    directions : string
+    contact : name, address, phone, email
+    map : latitude, longitude
+  }
+}
+package "auth-service" {
+  entity Auth {
+    username : string
+    password : string
+    token : string
+  }
+}
+Room ||..o{ Booking : roomid (logic)
+@enduml

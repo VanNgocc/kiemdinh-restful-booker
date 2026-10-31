@@ -1,0 +1,34 @@
+{
+  "Total" : {
+    "transaction" : "Total",
+    "sampleCount" : 29932,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 0.4471468662301213,
+    "medianResTime" : 0.0,
+    "minResTime" : 0.0,
+    "maxResTime" : 15.0,
+    "pct1ResTime" : 1.0,
+    "pct2ResTime" : 1.0,
+    "pct3ResTime" : 1.0,
+    "throughput" : 166.84131903413524,
+    "receivedKBytesPerSec" : 213.40011362274532,
+    "sentKBytesPerSec" : 25.25430122098727
+  },
+  "GET /room/" : {
+    "transaction" : "GET /room/",
+    "sampleCount" : 29932,
+    "errorCount" : 0,
+    "errorPct" : 0.0,
+    "meanResTime" : 0.4471468662301213,
+    "medianResTime" : 0.0,
+    "minResTime" : 0.0,
+    "maxResTime" : 15.0,
+    "pct1ResTime" : 1.0,
+    "pct2ResTime" : 1.0,
+    "pct3ResTime" : 1.0,
+    "throughput" : 166.84131903413524,
+    "receivedKBytesPerSec" : 213.40011362274532,
+    "sentKBytesPerSec" : 25.25430122098727
+  }
+}
