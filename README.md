@@ -1,3 +1,6 @@
+| **Video thuyết trình** | https://drive.google.com/file/d/1EUaWjtVmfqKDpely7X452NX2Idmj0OBn/view?usp=sharing |
+
+
 BỘ GIÁO DỤC VÀ ĐÀO TẠO
 
 **TRƯỜNG ĐẠI HỌC PHENIKAA**
