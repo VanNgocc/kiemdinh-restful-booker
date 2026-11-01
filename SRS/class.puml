@@ -1,0 +1,80 @@
+@startuml class
+' Nguồn: SRS mục 5.3 - Sơ đồ lớp (booking-service)
+' Các dịch vụ còn lại: xem class-other-services.puml
+' Lưu file ở dạng UTF-8. Chạy dòng lệnh: plantuml -charset UTF-8 class.puml
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide empty members
+
+class BookingController {
+  +getBookings(roomid, token)
+  +checkUnavailability(checkin, checkout)
+  +createBooking(booking)
+  +getBooking(id, token)
+  +updateBooking(booking, id, token)
+  +deleteBooking(id, token)
+  +getSummaries(roomid)
+}
+
+class BookingService {
+  +getBookings(roomId, token) : BookingResult
+  +getIndividualBooking(id, token) : BookingResult
+  +createBooking(booking) : BookingResult
+  +updateBooking(id, booking, token) : BookingResult
+  +deleteBooking(id, token) : HttpStatus
+  +getBookingSummaries(roomId) : BookingSummaries
+  +checkUnavailability(checkin, checkout) : BookingResult
+}
+
+class BookingDB {
+  +query(id) : Booking
+  +queryAllBookings() : List
+  +queryBookingsById(roomId) : List
+  +queryByDate(checkin, checkout) : List
+  +checkForBookingConflict(booking) : boolean
+  +create(booking) : CreatedBooking
+  +update(id, booking) : CreatedBooking
+  +delete(id) : boolean
+}
+
+class DateCheckValidator {
+  +isValid(dates) : boolean
+}
+
+class AuthRequests {
+  +postCheckAuth(token) : boolean
+}
+
+class MessageRequests {
+  +postMessage(message) : boolean
+}
+
+class MessageBuilder {
+  +build(booking) : Message
+}
+
+class Booking {
+  -bookingid : int
+  -roomid : int
+  -firstname : String
+  -lastname : String
+  -depositpaid : boolean
+  -bookingDates : BookingDates
+  -email : Optional
+  -phone : Optional
+}
+
+class BookingDates {
+  -checkin : LocalDate
+  -checkout : LocalDate
+}
+
+BookingController --> BookingService
+BookingService --> BookingDB
+BookingService --> DateCheckValidator
+BookingService --> AuthRequests
+BookingService --> MessageRequests
+BookingService --> MessageBuilder
+BookingDB ..> Booking
+Booking "1" *-- "1" BookingDates
+@enduml

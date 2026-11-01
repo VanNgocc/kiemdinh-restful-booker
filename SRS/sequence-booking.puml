@@ -1,0 +1,44 @@
+@startuml sequence-booking
+' Nguồn: SRS mục 5.5 - Sơ đồ tuần tự: Đặt phòng
+' Lưu file ở dạng UTF-8. Chạy dòng lệnh: plantuml -charset UTF-8 sequence-booking.puml
+skinparam shadowing false
+skinparam sequenceMessageAlign left
+
+actor Guest
+participant "UI (React)" as UI
+participant Proxy
+participant BookingController as BC
+participant BookingService as BS
+participant BookingDB as DB
+participant MessageRequests as MR
+participant "Message Service" as MS
+
+Guest -> UI : Chọn phòng, nhập thông tin và ngày
+UI -> Proxy : POST /booking/ (Booking)
+Proxy -> BC : POST /
+BC -> BC : Kiểm tra ràng buộc dữ liệu (kể cả đủ checkin, checkout)
+alt vi phạm ràng buộc
+  BC --> UI : 400
+else hợp lệ
+  BC -> BS : createBooking(booking)
+  BS -> BS : Kiểm tra checkin < checkout
+  alt ngày không hợp lệ
+    BS --> BC : 409
+  else ngày hợp lệ
+    BS -> DB : checkForBookingConflict(booking)
+    alt trùng lịch
+      BS --> BC : 409
+    else không trùng
+      BS -> DB : create(booking)
+      DB --> BS : CreatedBooking
+      opt có đủ email và phone
+        BS -> MR : postMessage(message)
+        MR -> MS : POST /message/
+      end
+      BS --> BC : 201 CreatedBooking
+    end
+  end
+  BC --> UI : trạng thái + kết quả
+end
+UI --> Guest : Xác nhận hoặc báo lỗi
+@enduml

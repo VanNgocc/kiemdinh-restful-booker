@@ -1,0 +1,155 @@
+@startuml class-other-services
+' Nguồn: SRS mục 5.3 - các dịch vụ auth, room, message, branding, report (cấu trúc Controller -> Service -> DB)
+' Chi tiết booking-service: xem class.puml
+' Lưu file ở dạng UTF-8. Chạy dòng lệnh: plantuml -charset UTF-8 class-other-services.puml
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+hide empty members
+skinparam class {
+  BackgroundColor<<suy_ra>> #FFF3CD
+  BorderColor<<suy_ra>> #B58900
+}
+
+legend right
+  Lớp nền vàng (<<suy_ra>>): tên lớp suy ra theo quy ước Controller -> Service -> DB
+  và theo danh mục API (SRS Phụ lục A); chưa đối chiếu với mã nguồn Java.
+  Lớp nền trắng: tên có trong SRS hoặc Báo cáo.
+  Phương thức của Controller tương ứng với các API trong SRS Phụ lục A;
+  thuộc tính của lớp mô hình lấy từ dữ liệu trả về của API và ERD.
+endlegend
+
+package "auth-service" {
+  class AuthController {
+    +login(auth)
+    +validate(token)
+    +logout(token)
+  }
+  class AuthService {
+    +queryCredentials(auth) : Token
+  }
+  class AuthDB
+  class Auth {
+    -username : String
+    -password : String
+  }
+  class Token {
+    -token : String
+    -expiry : Date
+  }
+  AuthController --> AuthService
+  AuthService --> AuthDB
+  AuthDB ..> Auth
+  AuthDB ..> Token
+}
+
+package "room-service" {
+  class RoomController <<suy_ra>> {
+    +getRooms(checkin, checkout)
+    +getRoom(id)
+    +createRoom(room, token)
+    +updateRoom(id, room, token)
+    +deleteRoom(id, token)
+  }
+  class RoomService <<suy_ra>>
+  class RoomDB
+  class Room {
+    -roomid : int
+    -roomName : String
+    -type : String
+    -accessible : boolean
+    -image : String
+    -description : String
+    -features : List
+    -roomPrice : int
+  }
+  RoomController --> RoomService
+  RoomService --> RoomDB
+  RoomDB ..> Room
+}
+
+package "message-service" {
+  class MessageController {
+    +getMessages()
+    +getCount()
+    +getMessage(id)
+    +createMessage(message)
+    +markAsRead(id, token)
+    +deleteMessage(id, token)
+  }
+  class MessageService
+  class MessageDB
+  class Message {
+    -messageid : int
+    -name : String
+    -email : String
+    -phone : String
+    -subject : String
+    -description : String
+    -read : boolean
+  }
+  MessageController --> MessageService
+  MessageService --> MessageDB
+  MessageDB ..> Message
+}
+
+package "branding-service" {
+  class BrandingController <<suy_ra>> {
+    +getBranding()
+    +updateBranding(branding, token)
+  }
+  class BrandingService <<suy_ra>>
+  class BrandingDB <<suy_ra>>
+  class Branding {
+    -name : String
+    -logoUrl : String
+    -description : String
+    -directions : String
+    -map : MapPoint
+    -contact : Contact
+    -address : Address
+  }
+  class MapPoint {
+    -latitude : double
+    -longitude : double
+  }
+  class Contact {
+    -name : String
+    -phone : String
+    -email : String
+  }
+  class Address {
+    -line1 : String
+    -line2 : String
+    -postTown : String
+    -county : String
+    -postCode : String
+  }
+  BrandingController --> BrandingService
+  BrandingService --> BrandingDB
+  BrandingDB ..> Branding
+  Branding "1" *-- "1" MapPoint
+  Branding "1" *-- "1" Contact
+  Branding "1" *-- "1" Address
+}
+
+package "report-service (không có CSDL riêng)" {
+  class ReportController <<suy_ra>> {
+    +getReport(token)
+    +getRoomReport(id)
+  }
+  class ReportService
+  ReportController --> ReportService
+}
+
+package "booking-service (chi tiết ở class.puml)" {
+  class BookingController
+}
+
+' Quan hệ giữa các dịch vụ theo SRS mục 2.1
+RoomService ..> AuthController : xác thực token
+MessageService ..> AuthController : xác thực token
+BrandingService ..> AuthController : xác thực token
+RoomService ..> BookingController : lấy phòng đã có booking
+ReportService ..> RoomController : lấy danh sách phòng
+ReportService ..> BookingController : lấy booking
+@enduml

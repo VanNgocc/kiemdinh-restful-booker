@@ -1,0 +1,44 @@
+@startuml usecase
+' Nguồn: SRS mục 5.1 - Sơ đồ Use Case
+' Lưu file ở dạng UTF-8. Chạy dòng lệnh: plantuml -charset UTF-8 usecase.puml
+left to right direction
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+actor "Guest" as Guest
+actor "Admin" as Admin
+
+rectangle "Restful-booker Platform" {
+  usecase "UC-01\nXem thông tin khách sạn" as UC01
+  usecase "UC-02\nXem và lọc phòng" as UC02
+  usecase "UC-03\nĐặt phòng" as UC03
+  usecase "UC-04\nGửi liên hệ" as UC04
+  usecase "UC-05\nĐăng nhập / Đăng xuất" as UC05
+  usecase "UC-06\nQuản lý phòng" as UC06
+  usecase "UC-07\nQuản lý đặt phòng" as UC07
+  usecase "UC-08\nQuản lý tin nhắn" as UC08
+  usecase "UC-09\nXem báo cáo" as UC09
+  usecase "UC-10\nCấu hình thương hiệu" as UC10
+  usecase "UC-11\nXác thực token" as UC11
+  usecase "Kiểm tra trùng lịch" as UC12
+}
+
+Guest --> UC01
+Guest --> UC02
+Guest --> UC03
+Guest --> UC04
+
+Admin --> UC05
+Admin --> UC06
+Admin --> UC07
+Admin --> UC08
+Admin --> UC09
+Admin --> UC10
+
+UC03 ..> UC12 : <<include>>
+UC07 ..> UC12 : <<include>>
+UC06 ..> UC11 : <<include>>
+UC07 ..> UC11 : <<include>>
+UC08 ..> UC11 : <<include>>
+UC10 ..> UC11 : <<include>>
+@enduml

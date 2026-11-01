@@ -1,0 +1,22 @@
+@startuml sequence-login
+' Nguồn: SRS mục 5.6 - Sơ đồ tuần tự: Đăng nhập Admin (phần đăng nhập)
+' Phần xác thực token khi thao tác quản trị: xem sequence-admin-auth.puml
+' Lưu file ở dạng UTF-8. Chạy dòng lệnh: plantuml -charset UTF-8 sequence-login.puml
+skinparam shadowing false
+skinparam sequenceMessageAlign left
+
+actor Admin
+participant "UI (React)" as UI
+participant AuthController as AC
+participant AuthService as AS
+
+Admin -> UI : Nhập tài khoản
+UI -> AC : POST /auth/login
+AC -> AS : queryCredentials(auth)
+alt hợp lệ
+  AS --> AC : token mới
+  AC --> UI : 200 + cookie token
+else sai thông tin
+  AC --> UI : 403
+end
+@enduml

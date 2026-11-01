@@ -1,0 +1,28 @@
+@startuml activity-booking
+' Nguồn: SRS mục 5.4 - Sơ đồ hoạt động: Đặt phòng
+' Lưu file ở dạng UTF-8. Chạy dòng lệnh: plantuml -charset UTF-8 activity-booking.puml
+skinparam shadowing false
+
+start
+:Guest chọn phòng và nhập thông tin;
+:Gửi POST /booking/;
+if (Qua kiểm tra ràng buộc dữ liệu\n(kể cả đủ checkin, checkout)?) then (Có)
+  if (checkin trước checkout?) then (Có)
+    if (Trùng lịch cùng phòng?) then (Không)
+      :Lưu booking;
+      if (Có đủ email và phone?) then (Có)
+        :Gửi thông báo sang message-service;
+      else (Không)
+      endif
+      :Trả 201;
+    else (Có)
+      :Trả 409: trùng lịch;
+    endif
+  else (Không)
+    :Trả 409: ngày không hợp lệ;
+  endif
+else (Không)
+  :Trả 400;
+endif
+stop
+@enduml
