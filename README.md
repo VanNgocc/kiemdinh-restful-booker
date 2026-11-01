@@ -1762,14 +1762,6 @@ Có 33 trên 34 yêu cầu có ít nhất một test case đã thực thi. Chỉ
 
 # Chương 5. Báo cáo kết quả kiểm thử
 
-| **Mục**            | **Nội dung**                                                                                                                    |
-|--------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| Môn học            | Đánh giá và kiểm định chất lượng phần mềm                                                                                       |
-| Đề tài             | Kiểm định chất lượng phần mềm hệ thống đặt phòng khách sạn mã nguồn mở Restful-booker Platform bằng Postman, JMeter và Selenium |
-| Phiên bản tài liệu | 1.0                                                                                                                             |
-| Ngày               | 31/10/2026                                                                                                                      |
-| Nhóm thực hiện     | Nguyễn Văn Ngọc - 23010413; Nguyễn Thị Trà Mi - 23010460                                                                        |
-
 ## 5.1 Tóm tắt kết quả
 
 Bộ kiểm thử gồm **116 test case** thiết kế (Test Plan mục 3.7.10). Kết quả thực thi:
