@@ -2,8 +2,6 @@ BỘ GIÁO DỤC VÀ ĐÀO TẠO
 
 **TRƯỜNG ĐẠI HỌC PHENIKAA**
 
-![Logo Trường Đại học Phenikaa](media/image1.jpeg)
-
 **BÀI TẬP LỚN**
 
 **ĐÁNH GIÁ VÀ KIỂM ĐỊNH CHẤT LƯỢNG PHẦN MỀM**
@@ -163,7 +161,43 @@ Các hành vi của hệ thống trong tài liệu được suy ra từ mã ngu�
 
 Hệ thống gồm giao diện web (ứng dụng `assets`, chạy bằng `npm run dev`, cổng 3003) và các dịch vụ backend độc lập, mỗi dịch vụ chạy trên một cổng riêng. Theo `run_locally.cmd`, không có tiến trình proxy riêng; giao diện gọi API qua đường dẫn dạng `http://localhost:3003/api/{dịch vụ}` (đã xác nhận `GET /api/branding` và `GET /api/room` trả 200), và ứng dụng `assets` nhiều khả năng chuyển tiếp request tới dịch vụ tương ứng. Mỗi dịch vụ có CSDL riêng (H2 in-memory), liên kết với nhau qua REST, không có khóa ngoại giữa các CSDL.
 
-![Sơ đồ kiến trúc hệ thống](media/image2.png)
+```mermaid
+flowchart LR
+    Browser(["Trình duyệt<br/>Guest / Admin"])
+    UI["Giao diện web assets<br/>React, cổng 3003"]
+    Browser --> UI
+
+    subgraph BE["Các dịch vụ backend (giao tiếp qua REST)"]
+        AUTH["auth-service<br/>cổng 3004"]
+        BOOKING["booking-service<br/>cổng 3000"]
+        ROOM["room-service<br/>cổng 3001"]
+        BRANDING["branding-service<br/>cổng 3002"]
+        REPORT["report-service<br/>cổng 3005"]
+        MESSAGE["message-service<br/>cổng 3006"]
+    end
+
+    UI -->|"/api/auth"| AUTH
+    UI -->|"/api/booking"| BOOKING
+    UI -->|"/api/room"| ROOM
+    UI -->|"/api/branding"| BRANDING
+    UI -->|"/api/report"| REPORT
+    UI -->|"/api/message"| MESSAGE
+
+    AUTH --> DB1[("ACCOUNTS, TOKENS")]
+    BOOKING --> DB2[("BOOKINGS")]
+    ROOM --> DB3[("ROOMS")]
+    BRANDING --> DB4[("BRANDINGS")]
+    MESSAGE --> DB5[("MESSAGES")]
+
+    BOOKING -.->|"xác thực token"| AUTH
+    ROOM -.->|"xác thực token"| AUTH
+    MESSAGE -.->|"xác thực token"| AUTH
+    BRANDING -.->|"xác thực token"| AUTH
+    BOOKING -.->|"gửi thông báo"| MESSAGE
+    ROOM -.->|"lấy phòng đã có booking"| BOOKING
+    REPORT -.->|"lấy danh sách phòng"| ROOM
+    REPORT -.->|"lấy booking"| BOOKING
+```
 
 | **Dịch vụ** | **Vai trò**                                            | **CSDL**            |
 |-------------|--------------------------------------------------------|---------------------|
@@ -318,39 +352,485 @@ Các sơ đồ dưới đây dùng Mermaid (hiển thị trực tiếp trên Git
 
 ### 2.5.1 Sơ đồ Use Case
 
-![Sơ đồ Use Case](media/image3.png)
+```mermaid
+flowchart LR
+    Guest(["Guest"])
+    Admin(["Admin"])
+
+    subgraph SYS["Restful-booker Platform"]
+        UC01(["UC-01<br/>Xem thông tin khách sạn"])
+        UC02(["UC-02<br/>Xem và lọc phòng"])
+        UC03(["UC-03<br/>Đặt phòng"])
+        UC04(["UC-04<br/>Gửi liên hệ"])
+        UC05(["UC-05<br/>Đăng nhập / Đăng xuất"])
+        UC06(["UC-06<br/>Quản lý phòng"])
+        UC07(["UC-07<br/>Quản lý đặt phòng"])
+        UC08(["UC-08<br/>Quản lý tin nhắn"])
+        UC09(["UC-09<br/>Xem báo cáo"])
+        UC10(["UC-10<br/>Cấu hình thương hiệu"])
+        UC11(["UC-11<br/>Xác thực token"])
+        UC12(["Kiểm tra trùng lịch"])
+    end
+
+    Guest --- UC01
+    Guest --- UC02
+    Guest --- UC03
+    Guest --- UC04
+
+    Admin --- UC05
+    Admin --- UC06
+    Admin --- UC07
+    Admin --- UC08
+    Admin --- UC09
+    Admin --- UC10
+
+    UC03 -.->|"«include»"| UC12
+    UC07 -.->|"«include»"| UC12
+    UC06 -.->|"«include»"| UC11
+    UC07 -.->|"«include»"| UC11
+    UC08 -.->|"«include»"| UC11
+    UC10 -.->|"«include»"| UC11
+```
 
 ### 2.5.2 Mô hình dữ liệu (ERD)
 
 Mỗi dịch vụ có CSDL riêng. Quan hệ giữa phòng và booking là tham chiếu logic qua `roomid`, không có khóa ngoại.
 
-![Mô hình dữ liệu (ERD)](media/image4.png)
+```mermaid
+erDiagram
+    ROOMS ||..o{ BOOKINGS : "roomid (tham chiếu logic)"
+
+    ROOMS {
+        int roomid PK
+        string room_name
+        string type
+        boolean accessible
+        string image
+        string description
+        string features "array"
+        int roomPrice
+    }
+
+    BOOKINGS {
+        int bookingid PK
+        int roomid
+        string firstname
+        string lastname
+        boolean depositpaid
+        date checkin
+        date checkout
+    }
+
+    MESSAGES {
+        int messageid PK
+        string name
+        string email
+        string phone
+        string subject
+        string description
+        boolean read
+    }
+
+    ACCOUNTS {
+        string username
+        string password
+    }
+
+    TOKENS {
+        string token
+        date expiry
+    }
+
+    BRANDINGS {
+        int brandingid PK
+        string name
+        string logo_url
+        string description
+        string directions
+        double latitude
+        double longitude
+        string contact_name
+        string phone
+        string email
+        string line1
+        string line2
+        string post_town
+        string county
+        string post_code
+    }
+```
 
 Ghi chú: `email` và `phone` của booking chỉ có trong yêu cầu đặt phòng, không lưu trong bảng BOOKINGS; chúng được dùng để tạo tin nhắn thông báo.
 
 ### 2.5.3 Sơ đồ lớp (booking-service)
 
-![Sơ đồ lớp (booking-service)](media/image5.png)
+```mermaid
+classDiagram
+    class BookingController {
+        +getBookings(roomid, token)
+        +checkUnavailability(checkin, checkout)
+        +createBooking(booking)
+        +getBooking(id, token)
+        +updateBooking(booking, id, token)
+        +deleteBooking(id, token)
+        +getSummaries(roomid)
+    }
+
+    class BookingService {
+        +getBookings(roomId, token) BookingResult
+        +getIndividualBooking(id, token) BookingResult
+        +createBooking(booking) BookingResult
+        +updateBooking(id, booking, token) BookingResult
+        +deleteBooking(id, token) HttpStatus
+        +getBookingSummaries(roomId) BookingSummaries
+        +checkUnavailability(checkin, checkout) BookingResult
+    }
+
+    class BookingDB {
+        +query(id) Booking
+        +queryAllBookings() List
+        +queryBookingsById(roomId) List
+        +queryByDate(checkin, checkout) List
+        +checkForBookingConflict(booking) boolean
+        +create(booking) CreatedBooking
+        +update(id, booking) CreatedBooking
+        +delete(id) boolean
+    }
+
+    class DateCheckValidator {
+        +isValid(dates) boolean
+    }
+
+    class AuthRequests {
+        +postCheckAuth(token) boolean
+    }
+
+    class MessageRequests {
+        +postMessage(message) boolean
+    }
+
+    class MessageBuilder {
+        +build(booking) Message
+    }
+
+    class Booking {
+        -int bookingid
+        -int roomid
+        -String firstname
+        -String lastname
+        -boolean depositpaid
+        -BookingDates bookingDates
+        -Optional email
+        -Optional phone
+    }
+
+    class BookingDates {
+        -LocalDate checkin
+        -LocalDate checkout
+    }
+
+    BookingController --> BookingService
+    BookingService --> BookingDB
+    BookingService --> DateCheckValidator
+    BookingService --> AuthRequests
+    BookingService --> MessageRequests
+    BookingService --> MessageBuilder
+    BookingDB ..> Booking
+    Booking "1" *-- "1" BookingDates
+```
+
+<details>
+<summary>Sơ đồ lớp của các dịch vụ còn lại (auth, room, message, branding, report)</summary>
+
+Lớp nền vàng: tên lớp suy ra theo quy ước Controller → Service → DB và theo danh mục API (SRS Phụ lục A); chưa đối chiếu với mã nguồn Java. Lớp nền trắng: tên có trong SRS hoặc Báo cáo.
+
+```mermaid
+classDiagram
+    namespace auth_service {
+        class AuthController {
+            +login(auth)
+            +validate(token)
+            +logout(token)
+        }
+        class AuthService {
+            +queryCredentials(auth) Token
+        }
+        class AuthDB
+        class Auth {
+            -String username
+            -String password
+        }
+        class Token {
+            -String token
+            -Date expiry
+        }
+    }
+    AuthController --> AuthService
+    AuthService --> AuthDB
+    AuthDB ..> Auth
+    AuthDB ..> Token
+
+    namespace room_service {
+        class RoomController {
+            <<suy_ra>>
+            +getRooms(checkin, checkout)
+            +getRoom(id)
+            +createRoom(room, token)
+            +updateRoom(id, room, token)
+            +deleteRoom(id, token)
+        }
+        class RoomService {
+            <<suy_ra>>
+        }
+        class RoomDB
+        class Room {
+            -int roomid
+            -String roomName
+            -String type
+            -boolean accessible
+            -String image
+            -String description
+            -List features
+            -int roomPrice
+        }
+    }
+    RoomController --> RoomService
+    RoomService --> RoomDB
+    RoomDB ..> Room
+
+    namespace message_service {
+        class MessageController {
+            +getMessages()
+            +getCount()
+            +getMessage(id)
+            +createMessage(message)
+            +markAsRead(id, token)
+            +deleteMessage(id, token)
+        }
+        class MessageService
+        class MessageDB
+        class Message {
+            -int messageid
+            -String name
+            -String email
+            -String phone
+            -String subject
+            -String description
+            -boolean read
+        }
+    }
+    MessageController --> MessageService
+    MessageService --> MessageDB
+    MessageDB ..> Message
+
+    namespace branding_service {
+        class BrandingController {
+            <<suy_ra>>
+            +getBranding()
+            +updateBranding(branding, token)
+        }
+        class BrandingService {
+            <<suy_ra>>
+        }
+        class BrandingDB {
+            <<suy_ra>>
+        }
+        class Branding {
+            -String name
+            -String logoUrl
+            -String description
+            -String directions
+            -MapPoint map
+            -Contact contact
+            -Address address
+        }
+        class MapPoint {
+            -double latitude
+            -double longitude
+        }
+        class Contact {
+            -String name
+            -String phone
+            -String email
+        }
+        class Address {
+            -String line1
+            -String line2
+            -String postTown
+            -String county
+            -String postCode
+        }
+    }
+    BrandingController --> BrandingService
+    BrandingService --> BrandingDB
+    BrandingDB ..> Branding
+    Branding "1" *-- "1" MapPoint
+    Branding "1" *-- "1" Contact
+    Branding "1" *-- "1" Address
+
+    namespace report_service {
+        class ReportController {
+            <<suy_ra>>
+            +getReport(token)
+            +getRoomReport(id)
+        }
+        class ReportService
+    }
+    ReportController --> ReportService
+
+    namespace booking_service {
+        class BookingController
+    }
+
+    RoomService ..> AuthController : xác thực token
+    MessageService ..> AuthController : xác thực token
+    BrandingService ..> AuthController : xác thực token
+    RoomService ..> BookingController : lấy phòng đã có booking
+    ReportService ..> RoomController : lấy danh sách phòng
+    ReportService ..> BookingController : lấy booking
+
+    style RoomController fill:#FFF3CD,stroke:#B58900,color:#000
+    style RoomService fill:#FFF3CD,stroke:#B58900,color:#000
+    style BrandingController fill:#FFF3CD,stroke:#B58900,color:#000
+    style BrandingService fill:#FFF3CD,stroke:#B58900,color:#000
+    style BrandingDB fill:#FFF3CD,stroke:#B58900,color:#000
+    style ReportController fill:#FFF3CD,stroke:#B58900,color:#000
+```
+
+</details>
 
 Các dịch vụ auth, room, message, branding, report có cấu trúc Controller → Service → DB tương tự.
 
 ### 2.5.4 Sơ đồ hoạt động: Đặt phòng
 
-![Sơ đồ hoạt động: Đặt phòng](media/image6.png)
+```mermaid
+flowchart TD
+    S(["Bắt đầu"]) --> A["Guest chọn phòng và nhập thông tin"]
+    A --> B["Gửi POST /booking/"]
+    B --> C{"Qua kiểm tra ràng buộc dữ liệu<br/>kể cả đủ checkin, checkout?"}
+    C -->|Không| R400["Trả 400"]
+    C -->|Có| D{"checkin trước checkout?"}
+    D -->|Không| R409a["Trả 409: ngày không hợp lệ"]
+    D -->|Có| E{"Trùng lịch cùng phòng?"}
+    E -->|Có| R409b["Trả 409: trùng lịch"]
+    E -->|Không| F["Lưu booking"]
+    F --> G{"Có đủ email và phone?"}
+    G -->|Có| H["Gửi thông báo sang message-service"]
+    G -->|Không| R201["Trả 201"]
+    H --> R201
+    R400 --> Z(["Kết thúc"])
+    R409a --> Z
+    R409b --> Z
+    R201 --> Z
+```
 
 ### 2.5.5 Sơ đồ tuần tự: Đặt phòng
 
-![Sơ đồ tuần tự: Đặt phòng](media/image7.png)
+```mermaid
+sequenceDiagram
+    actor Guest
+    participant UI as UI React
+    participant Proxy
+    participant BC as BookingController
+    participant BS as BookingService
+    participant DB as BookingDB
+    participant MR as MessageRequests
+    participant MS as Message Service
+
+    Guest->>UI: Chọn phòng, nhập thông tin và ngày
+    UI->>Proxy: POST /booking/ (Booking)
+    Proxy->>BC: POST /
+    BC->>BC: Kiểm tra ràng buộc dữ liệu (kể cả đủ checkin, checkout)
+    alt vi phạm ràng buộc
+        BC-->>UI: 400
+    else hợp lệ
+        BC->>BS: createBooking(booking)
+        BS->>BS: Kiểm tra checkin trước checkout
+        alt ngày không hợp lệ
+            BS-->>BC: 409
+        else ngày hợp lệ
+            BS->>DB: checkForBookingConflict(booking)
+            alt trùng lịch
+                BS-->>BC: 409
+            else không trùng
+                BS->>DB: create(booking)
+                DB-->>BS: CreatedBooking
+                opt có đủ email và phone
+                    BS->>MR: postMessage(message)
+                    MR->>MS: POST /message/
+                end
+                BS-->>BC: 201 CreatedBooking
+            end
+        end
+        BC-->>UI: trạng thái + kết quả
+    end
+    UI-->>Guest: Xác nhận hoặc báo lỗi
+```
 
 ### 2.5.6 Sơ đồ tuần tự: Đăng nhập và xác thực Admin
 
-![Sơ đồ tuần tự: Đăng nhập và xác thực Admin](media/image8.png)
+**Đăng nhập (cấp token)**
+
+```mermaid
+sequenceDiagram
+    actor Admin
+    participant UI as UI React
+    participant AC as AuthController
+    participant AS as AuthService
+
+    Admin->>UI: Nhập tài khoản
+    UI->>AC: POST /auth/login
+    AC->>AS: queryCredentials(auth)
+    alt hợp lệ
+        AS-->>AC: token mới
+        AC-->>UI: 200 + cookie token
+    else sai thông tin
+        AC-->>UI: 403
+    end
+```
+
+**Xác thực token khi thao tác quản trị**
+
+```mermaid
+sequenceDiagram
+    actor Admin
+    participant UI as UI React
+    participant BC as Service nghiệp vụ
+    participant AR as AuthRequests
+    participant AC as AuthController
+
+    Admin->>UI: Thao tác quản trị
+    UI->>BC: request + cookie token
+    BC->>AR: postCheckAuth(token)
+    AR->>AC: POST /auth/validate
+    alt token tồn tại
+        AC-->>AR: 200
+        AR-->>BC: true
+        BC-->>UI: thực hiện nghiệp vụ
+    else token không hợp lệ
+        AC-->>AR: 403
+        AR-->>BC: false
+        BC-->>UI: 403
+    end
+```
 
 ### 2.5.7 Sơ đồ trạng thái: Vòng đời booking
 
 Dùng làm cơ sở cho State Transition Testing. Sơ đồ chỉ vẽ các chuyển trạng thái thành công; các trường hợp bị từ chối và thao tác trên booking không tồn tại được liệt kê trong bảng chuyển trạng thái bên dưới.
 
-![Sơ đồ trạng thái: Vòng đời booking](media/image9.png)
+```mermaid
+stateDiagram-v2
+    direction LR
+    state "Chưa tồn tại" as NotExist
+    state "Đã đặt" as Booked
+    state "Đã xóa" as Deleted
+
+    [*] --> NotExist
+    NotExist --> Booked : T1 - POST /booking/ - 201
+    Booked --> Booked : T4 - PUT /booking/{id} - 200
+    Booked --> Booked : T7 - GET /booking/{id} - 200
+    Booked --> Deleted : T8 - DELETE /booking/{id} - 202
+```
 
 **Bảng chuyển trạng thái**
 
